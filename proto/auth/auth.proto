@@ -4,10 +4,14 @@ package auth;
 
 option go_package = "github.com/tclutin/article-alchemy-service-protos/gen/go/auth;authpb";
 
+import "google/protobuf/timestamp.proto";
+
 service Auth {
   rpc SignUp(RegisterRequest) returns (TokenResponse);
   rpc LogIn(LoginRequest) returns (TokenResponse);
-  rpc ValidateToken(RefreshRequest) returns (ValidationResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (TokenResponse);
+  rpc ValidateToken(AccessTokenRequest) returns (ValidationTokenResponse);
+  rpc GetUserInfo(GetUserInfoRequest) returns (UserInfoResponse);
 }
 
 message RegisterRequest {
@@ -20,7 +24,16 @@ message RegisterRequest {
 message LoginRequest {
   string email = 1;
   string password = 2;
-  string device_id = 4;
+  string device_id = 3;
+}
+
+message AccessTokenRequest {
+  string access_token = 1;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+  string device_id = 2;
 }
 
 message TokenResponse {
@@ -28,11 +41,18 @@ message TokenResponse {
   string refresh_token = 2;
 }
 
-message RefreshRequest {
-  string refresh_token = 1;
-  string device_id = 4;
+message ValidationTokenResponse {
+  uint64 user_id = 1;
 }
 
-message ValidationResponse {
+message GetUserInfoRequest {
   uint64 user_id = 1;
+}
+
+message UserInfoResponse {
+  uint64 user_id = 1;
+  string username = 2;
+  string email = 3;
+  string password = 4;
+  google.protobuf.Timestamp created_at = 5;
 }
