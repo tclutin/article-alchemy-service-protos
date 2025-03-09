@@ -11,6 +11,7 @@ service Auth {
   rpc LogIn(LoginRequest) returns (TokenResponse);
   rpc RefreshToken(RefreshTokenRequest) returns (TokenResponse);
   rpc GetUserInfo(GetUserInfoRequest) returns (UserInfoResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
 }
 
 message RegisterRequest {
@@ -48,4 +49,13 @@ message UserInfoResponse {
   bool is_active = 4;
   string password = 5;
   google.protobuf.Timestamp created_at = 6;
+}
+
+message LogoutRequest {
+  uint64 user_id = 1;
+  string refresh_token = 2;
+}
+
+message LogoutResponse {
+  string message = 1;
 }
