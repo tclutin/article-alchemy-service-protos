@@ -2,20 +2,58 @@ syntax = "proto3";
 
 package auth;
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+import "google/api/annotations.proto";
+import "google/api/http.proto";
+
+import "buf/validate/validate.proto";
+
 option go_package = "github.com/tclutin/article-alchemy-service-protos/gen/go/auth;authpb";
 
-import "google/protobuf/timestamp.proto";
+service AuthService {
+  rpc SignUp(RegisterRequest) returns (TokenResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/signup"
+      body: "*"
+    };
+  }
 
-service Auth {
-  rpc SignUp(RegisterRequest) returns (TokenResponse);
-  rpc LogIn(LoginRequest) returns (TokenResponse);
-  rpc RefreshToken(RefreshTokenRequest) returns (TokenResponse);
-  rpc GetUserInfo(GetUserInfoRequest) returns (UserInfoResponse);
-  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc LogIn(LoginRequest) returns (TokenResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/login"
+      body: "*"
+    };
+  }
+
+  rpc RefreshToken(RefreshTokenRequest) returns (TokenResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/refresh"
+      body: "*"
+    };
+  }
+
+  rpc GetUserInfo(google.protobuf.Empty) returns (GetUserInfoResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/auth/me"
+    };
+  }
+
+  rpc Logout(LogoutRequest) returns (LogoutResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/logout"
+      body: "*"
+    };
+  }
 }
 
 message RegisterRequest {
-  string email = 1;
+  string email = 1 [(buf.validate.field).cel = {
+    id: "valid_email"
+    message: "email must be a valid email"
+    expression: "this.isEmail()"
+  }];
   string username = 2;
   string password = 3;
 }
@@ -23,10 +61,6 @@ message RegisterRequest {
 message LoginRequest {
   string email = 1;
   string password = 2;
-}
-
-message AccessTokenRequest {
-  string access_token = 1;
 }
 
 message RefreshTokenRequest {
@@ -38,11 +72,7 @@ message TokenResponse {
   string refresh_token = 2;
 }
 
-message GetUserInfoRequest {
-  uint64 user_id = 1;
-}
-
-message UserInfoResponse {
+message GetUserInfoResponse {
   uint64 user_id = 1;
   string username = 2;
   string email = 3;
@@ -52,8 +82,7 @@ message UserInfoResponse {
 }
 
 message LogoutRequest {
-  uint64 user_id = 1;
-  string refresh_token = 2;
+  string refresh_token = 1;
 }
 
 message LogoutResponse {
