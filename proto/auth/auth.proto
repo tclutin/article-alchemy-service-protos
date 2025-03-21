@@ -8,7 +8,6 @@ import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "google/api/http.proto";
 
-import "buf/validate/validate.proto";
 
 option go_package = "github.com/tclutin/article-alchemy-service-protos/gen/go/auth;authpb";
 
@@ -49,11 +48,7 @@ service AuthService {
 }
 
 message RegisterRequest {
-  string email = 1 [(buf.validate.field).cel = {
-    id: "valid_email"
-    message: "email must be a valid email"
-    expression: "this.isEmail()"
-  }];
+  string email = 1;
   string username = 2;
   string password = 3;
 }
