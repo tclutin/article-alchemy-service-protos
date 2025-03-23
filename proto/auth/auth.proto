@@ -1,15 +1,13 @@
 syntax = "proto3";
 
-package auth;
+package auth_v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
-
 import "google/api/annotations.proto";
-import "google/api/http.proto";
+import "validate/validate.proto";
 
-
-option go_package = "github.com/tclutin/article-alchemy-service-protos/gen/go/auth;authpb";
+option go_package = "github.com/tclutin/article-alchemy-service-protos/gen/go/auth_v1;auth_v1";
 
 service AuthService {
   rpc SignUp(RegisterRequest) returns (TokenResponse) {
@@ -48,7 +46,7 @@ service AuthService {
 }
 
 message RegisterRequest {
-  string email = 1;
+  string email = 1 [(validate.rules).string.email = true];
   string username = 2;
   string password = 3;
 }
