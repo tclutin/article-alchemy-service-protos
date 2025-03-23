@@ -46,18 +46,55 @@ service AuthService {
 }
 
 message RegisterRequest {
-  string email = 1 [(validate.rules).string.email = true];
-  string username = 2;
-  string password = 3;
+  string email = 1 [
+    (validate.rules).string = {
+      email: true,
+      min_len: 5,
+      max_len: 255
+    }
+  ];
+
+  string username = 2 [
+    (validate.rules).string = {
+      min_len: 3,
+      max_len: 50,
+      pattern: "^[a-zA-Z0-9_]+$"
+    }
+  ];
+
+  string password = 3 [
+    (validate.rules).string = {
+      min_len: 8,
+      max_len: 64,
+      pattern: "^[A-Za-z0-9#?!@$%^&*-]{8,}$"
+    }
+  ];
 }
 
 message LoginRequest {
-  string email = 1;
-  string password = 2;
+  string email = 1 [
+    (validate.rules).string = {
+      email: true,
+      min_len: 5,
+      max_len: 255
+    }
+  ];
+
+  string password = 2 [
+    (validate.rules).string = {
+      min_len: 8,
+      max_len: 64
+    }
+  ];
 }
 
 message RefreshTokenRequest {
-  string refresh_token = 1;
+  string refresh_token = 1 [
+    (validate.rules).string = {
+      min_len: 32,
+      max_len: 512
+    }
+  ];
 }
 
 message TokenResponse {
@@ -75,7 +112,12 @@ message GetUserInfoResponse {
 }
 
 message LogoutRequest {
-  string refresh_token = 1;
+  string refresh_token = 1 [
+    (validate.rules).string = {
+      min_len: 32,
+      max_len: 512
+    }
+  ];
 }
 
 message LogoutResponse {
