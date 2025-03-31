@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package content_v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/tclutin/article-alchemy-service-protos/gen/go/content_v1;content_v1";
+
+service ContentService {
+  rpc ExtractContentPreview(ExtractContentPreviewRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/contents/preview"
+      body: "*"
+    };
+  };
+
+  rpc ExtractContent(ExtractContentRequest) returns (ExtractContentResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/contents"
+      body: "*"
+    };
+  };
+
+  rpc GetHistory(google.protobuf.Empty) returns (GetHistoryResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/contents"
+    };
+  };
+}
+
+message ExtractContentPreviewRequest {
+  string url = 1 [
+    (validate.rules).string = {
+      uri: true,
+      min_len: 1,
+      max_len: 2083
+    }
+  ];
+
+  string email = 2 [
+    (validate.rules).string = {
+      email: true,
+      min_len: 5,
+      max_len: 255
+    }
+  ];
+}
+
+message ExtractContentRequest {
+  string url = 1 [
+    (validate.rules).string = {
+      uri: true,
+      min_len: 1,
+      max_len: 2083
+    }
+  ];
+}
+
+message ExtractContentResponse {
+  uint64 content_id = 1;
+}
+
+message GetHistoryResponse {
+  repeated GetHistoryItem items = 1;
+}
+
+message GetHistoryItem {
+  uint64 content_id = 1;
+  string status = 2;
+  string url = 3;
+  string data = 4;
+  string error = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
